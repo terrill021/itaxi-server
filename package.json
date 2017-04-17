@@ -1,0 +1,26 @@
+{
+  "name": "Uber",
+  "version": "1.0.0",
+  "description": "app that handle http requests like uber",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "MEAN",
+    "MVC",
+    "OPEN"
+  ],
+  "author": "Alejandro Terrill Duarte",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.10.1",
+    "connect-flash": "^0.1.1",
+    "ejs": "^2.0.6",
+    "express": "^4.10.7",
+    "express-session": "^1.10.1",
+    "mongoose": "^4.8.6",
+    "node-gcm": "^0.14.5",
+    "passport-local": "^1.0.0"
+  }
+}

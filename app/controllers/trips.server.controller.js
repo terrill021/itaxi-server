@@ -1,7 +1,7 @@
 var Trips = require('mongoose').model('Trips');
 var Drivers = require('mongoose').model('Drivers');
 var Clients = require('mongoose').model('Clients');
-var gcm = require('./push');
+var gcm = require('./push.server.controller');
 var callback = function(){
 };
 
@@ -86,7 +86,7 @@ exports.read = function(req, res) {
 	//preparar respuesta
 	var resp = {};
 	resp.error = false;
-	resp.message = "operation ended correctly";
+	resp.message = "The operation ended correctly";
 	resp.trips = req.trips;
 	//
 	res.json(resp);
@@ -95,9 +95,9 @@ exports.read = function(req, res) {
 //confirmar solicitud de viaje
 exports.confirmTrip = function(req, res, next) {	
 	//notificar al cliente
-	gcm.sendPush("You have a new trip whit pendient state", req.client.pushToken, callback);
+	gcm.sendPush("You have a new pending trip.", req.client.pushToken, callback);
 	//Notificar al conductor
-	gcm.sendPush("You are assigned a new trip",req.driver.pushToken, callback);
+	gcm.sendPush("A new trip was assigned to you.",req.driver.pushToken, callback);
 	//preparar respuesta
 	req.res = {};
 	req.res.trip = req.trip;
@@ -200,7 +200,7 @@ exports.tripById = function(req, res, next) {
 exports.reportCashedTrip = function(req, res, next){
 	
 	var generateResponse = function(){	
-		//resonder a la petición
+		//responder a la petición
 		req.res = {};
 		req.res.error = false;
 		req.res.message = "operation ended correctly";
@@ -210,12 +210,12 @@ exports.reportCashedTrip = function(req, res, next){
 
 	var notifyDriver = function(){
 		//notificar al conductor
-		gcm.sendPush("The trip have been cashed correctly, the value cashed is: " +
+		gcm.sendPush("The trip has been cashed correctly, the price is: $ " +
 		 req.trip.value, req.driver.pushToken, generateResponse);		
 	}
 	
 	//notificar al cliente 
-	gcm.sendPush("You trip have been cashed by a total of: $ "+ req.trip.value, req.client.pushToken, notifyDriver);
+	gcm.sendPush("The total price of the trip is: $ "+ req.trip.value, req.client.pushToken, notifyDriver);
 	
 	
 }

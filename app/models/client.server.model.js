@@ -8,7 +8,7 @@ var ClientsSchema = new Schema({
 	phone : String,
 	email : String,
 	balance : Number, 
-	creationDate : Date, 
+	creationDate : {type : Date, default : Date.now}, 
 	pushToken : {type : String, default: null}
 });
 

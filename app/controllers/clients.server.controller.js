@@ -3,15 +3,14 @@ var Clients = require('mongoose').model('Clients');
 //Crear un nuevo Cliente
 exports.create = function(req, res, next) {
 
-	req.body.creationDate = new Date();//por ahora
 	var clients = new Clients(req.body);
 	
 		clients.save(function(err, client) {
 			if (err) {
-			return next(err);
+			res.json({error:true, message:"The client could not be created"})
 			}	
 			else {
-			res.json(client);
+			res.json({error:false, message:"The client was created sucessfully", client: client});
 			}
 		}); 
 };

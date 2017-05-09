@@ -2,6 +2,8 @@ var Trips = require('mongoose').model('Trips');
 var Drivers = require('mongoose').model('Drivers');
 var Clients = require('mongoose').model('Clients');
 var gcm = require('./push.server.controller');
+var restConsumer = require('./restConsumer.server')
+
 var callback = function(){
 };
 
@@ -151,24 +153,37 @@ exports.cashTrip = function (req, res, next){
 	req.client.balance -= req.trip.value;
 
 	if (req.client.balance < 0) {
+
+		var body = {};
+		body._id = req.client._id;
+		body.cost = (req.client.balance * -1);
+		body.kilometers = req.trip.distance;
+
+		var osisResponse = function(err, jsonResponse){
+			
+			//Si proceso de cobro al OIS NO termino correctamente	
+			//..				
+			if(err){
+				res.json("There was a mistake reporting payment to OIS");
+			}else{
+				//Si proceso de cobro al OIS termino correctamente
+				//...
+				//Definir el estado de la cuenta a cero
+				req.client.balance = 0;
+				//Se actuliza la información del cliente
+				req.client.save(function(err){
+					if (err) {
+						res.json({err:true, message:"The client information could not be updated"})
+					}
+				});
+			//Se llama al siguiente middleware
+			next();
+			}
+		}
 		//reportar cobro al OIS
 		console.log('Reportando cobro al OIS');
-		/*Por definir*/
-		//Si proceso de cobro al OIS termino correctamente
-			//...
-			//Definir el estado de la cuenta a cero
-			req.client.balance = 0;
-		//Si proceso de cobro al OIS NO termino correctamente	
-			//..						
+		restConsumer.reportCash(body, osisResponse);				
 	}
-	//Se actuliza la información del cliente
-	req.client.save(function(err){
-		if (err) {
-			res.json({err:true, message:"The client information could not be updated"})
-		}
-	});
-	//Se llama al siguiente middleware
-	next();
 };
 
 //buscar un viaje por id
